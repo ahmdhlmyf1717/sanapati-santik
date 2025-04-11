@@ -51,7 +51,7 @@ class SuratController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'no_register' => 'required|numeric|unique:surats',
             'tanggal_diterima' => 'required|date',
             'asal_surat' => 'required',

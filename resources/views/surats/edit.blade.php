@@ -13,6 +13,7 @@
 
 
 
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700&display=swap');
 
@@ -355,6 +356,20 @@
 
     <!-- Footer -->
     @include('layouts.footer')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal menyimpan!',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                confirmButtonColor: '#d33',
+            });
+        </script>
+    @endif
+
+
 </body>
 
 </html>
