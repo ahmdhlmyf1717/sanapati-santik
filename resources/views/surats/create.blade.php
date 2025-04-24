@@ -291,7 +291,9 @@
 
                 <div class="mb-3">
                     <label for="no_register" class="form-label"><span class="text-danger">*</span>No</label>
-                    <input type="number" name="no_register" id="no_register" class="form-control" required>
+                    <input type="number" name="no_register" id="no_register" class="form-control" required
+                        value="{{ $nextRegisterNumber }}">
+
                 </div>
 
                 <div class="mb-3">
@@ -368,6 +370,20 @@
             }
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tanggalDiterima = document.getElementById('tanggal_diterima');
+            const tanggalDiteruskan = document.getElementById('tanggal_diteruskan');
+
+            tanggalDiterima.addEventListener('change', function() {
+                // kalau belum diisi manual, atau masih kosong, baru diisi otomatis
+                if (!tanggalDiteruskan.value) {
+                    tanggalDiteruskan.value = tanggalDiterima.value;
+                }
+            });
+        });
+    </script>
+
 
 
     <!-- Footer -->

@@ -17,8 +17,7 @@ class SuratController extends Controller
 
         // Filter berdasarkan bulan dan tahun
         if ($request->filled('month') && $request->filled('year')) {
-            $query->whereMonth('tanggal_diterima', $request->month)
-                ->whereYear('tanggal_diterima', $request->year);
+            $query->whereMonth('tanggal_diterima', $request->month)->whereYear('tanggal_diterima', $request->year);
         }
 
         // Filter berdasarkan pencarian
@@ -43,10 +42,12 @@ class SuratController extends Controller
         return view('surats.index', compact('surats', 'totalSurat'));
     }
 
-
     public function create()
     {
-        return view('surats.create');
+        $lastSurat = Surat::orderBy('no_register', 'desc')->first();
+        $nextRegisterNumber = $lastSurat ? $lastSurat->no_register + 1 : 1;
+
+        return view('surats.create', compact('nextRegisterNumber'));
     }
 
     public function store(Request $request)
@@ -58,7 +59,7 @@ class SuratController extends Controller
             'nomor_surat' => 'required|unique:surats',
             'perihal' => 'required',
             'ditujukan' => 'required',
-            'file_surat' => 'file|mimes:pdf|max:2048'
+            'file_surat' => 'file|mimes:pdf|max:2048',
         ]);
 
         $filePath = null;
@@ -87,7 +88,6 @@ class SuratController extends Controller
         return view('surats.show', compact('surat'));
     }
 
-
     public function edit(Surat $surat)
     {
         return view('surats.edit', compact('surat'));
@@ -102,11 +102,10 @@ class SuratController extends Controller
             'nomor_surat' => 'required|unique:surats,nomor_surat,' . $surat->id,
             'perihal' => 'required',
             'ditujukan' => 'required',
-            'file_surat' => 'file|mimes:pdf|max:2048'
+            'file_surat' => 'file|mimes:pdf|max:2048',
         ]);
 
         if ($request->hasFile('file_surat')) {
-
             if ($surat->file_path) {
                 Storage::disk('public')->delete($surat->file_path);
             }
@@ -129,7 +128,6 @@ class SuratController extends Controller
         return redirect()->route('surats.index')->with('success', 'Surat berhasil diperbarui');
     }
 
-
     public function destroy(Surat $surat)
     {
         try {
@@ -140,7 +138,9 @@ class SuratController extends Controller
 
             return redirect()->route('surats.index')->with('success', 'Surat berhasil dihapus');
         } catch (\Exception $e) {
-            return redirect()->route('surats.index')->with('error', 'Gagal menghapus surat: ' . $e->getMessage());
+            return redirect()
+                ->route('surats.index')
+                ->with('error', 'Gagal menghapus surat: ' . $e->getMessage());
         }
     }
 
@@ -150,9 +150,7 @@ class SuratController extends Controller
         $year = $request->input('year');
 
         // Cek apakah ada data yang sesuai dengan filter bulan dan tahun
-        $data = Surat::whereYear('tanggal_diterima', $year)
-            ->whereMonth('tanggal_diterima', $month)
-            ->get();
+        $data = Surat::whereYear('tanggal_diterima', $year)->whereMonth('tanggal_diterima', $month)->get();
 
         if ($data->isEmpty()) {
             // Jika tidak ada data, redirect dengan notifikasi
